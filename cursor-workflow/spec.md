@@ -102,16 +102,19 @@ CSV conventions (when generation starts): UTF-8, comma-separated, header row, op
 
 **Writes:**
 
-- Clean: `silver.customers`, `silver.products`, `silver.orders`
-- Quarantine: `ops.quarantine_customers`, `ops.quarantine_products`, `ops.quarantine_orders`
-- Quality summary: `ops.dq_results` (at least `run_id`, `table_name`, `rule_id`, `severity`, `failed_count`, `checked_count`)
+- Clean: `workspace.silver.customers`, `workspace.silver.products`, `workspace.silver.orders`
+- Quarantine: `workspace.ops.quarantine_customers`, `workspace.ops.quarantine_products`, `workspace.ops.quarantine_orders` (original Bronze string values plus rule metadata)
+- Quality: `workspace.ops.dq_results` (one row per failed rule: `run_id`, `table_name`, `rule_id`, `record_id`, `row_fingerprint`, `failed_column`, `failed_value`, `severity`, `message`)
 
 **Behavior:**
 
-- Cast to logical types.
-- Deduplicate on primary key (keep a documented winner, e.g. latest ingest).
-- Apply the quality rules below. Failures go to quarantine with `rule_id`; they do not enter Silver clean tables.
-- Silver `orders` must only contain rows whose `customer_id` and `product_id` exist in Silver dimensions after those dimensions are cleaned.
+- Read Bronze Delta tables only. Do not read Volume CSVs or `defect_log.csv`.
+- Cast clean rows to logical types.
+- Apply the named quality rules. Any failure sends the **entire Bronze row** to quarantine; it does not enter Silver.
+- Duplicate primary keys: quarantine **both** rows. Do not keep a winner in Silver.
+- Silver `orders` FK checks use clean `silver.customers` and `silver.products` only.
+- Full-table overwrite of Silver, quarantine, and `dq_results` so a re-run cannot duplicate rows.
+- Conservation: Bronze count = Silver count + quarantine count per entity.
 
 ### Gold
 

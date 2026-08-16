@@ -14,23 +14,11 @@ from pipeline.common.settings import (
     EXPECTED_BRONZE_COUNTS,
     RAW_DATA_PREFIX,
 )
+from pipeline.common.tables import ensure_schema, table_fqn, write_delta_overwrite
 
 
 def raw_csv_path(raw_prefix: str, entity: str) -> str:
     return f"{raw_prefix.rstrip('/')}/{entity}.csv"
-
-
-def table_fqn(catalog: str | None, schema: str, table: str) -> str:
-    if catalog:
-        return f"`{catalog}`.`{schema}`.`{table}`"
-    return f"`{schema}`.`{table}`"
-
-
-def ensure_schema(spark: SparkSession, catalog: str | None, schema: str) -> None:
-    if catalog:
-        spark.sql(f"CREATE SCHEMA IF NOT EXISTS `{catalog}`.`{schema}`")
-        return
-    spark.sql(f"CREATE SCHEMA IF NOT EXISTS `{schema}`")
 
 
 def read_raw_csv(spark: SparkSession, path: str) -> DataFrame:
@@ -59,13 +47,7 @@ def add_ingest_metadata(
 
 
 def write_bronze_table(df: DataFrame, fqn: str) -> None:
-    # Snapshot replace: re-running never appends, so the same run cannot duplicate rows.
-    (
-        df.write.format("delta")
-        .mode("overwrite")
-        .option("overwriteSchema", "true")
-        .saveAsTable(fqn)
-    )
+    write_delta_overwrite(df, fqn)
 
 
 def ingest_entity(

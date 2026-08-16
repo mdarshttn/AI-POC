@@ -8,8 +8,8 @@ Ordered stages for this POC. Do not start a later stage until the current one me
 |-------|------|--------|
 | 1 | Foundation and context | **Done** |
 | 2 | Python CSV generator | **Done** |
-| 3 | Bronze ingest (PySpark) | **Done** (this increment) |
-| 4 | Silver + quality (PySpark) | Not started |
+| 3 | Bronze ingest (PySpark) | **Done** |
+| 4 | Silver + quality (PySpark) | **Done** (this increment) |
 | 5 | Tests and validation | Not started |
 | 6 | Gold SQL | Not started |
 | 7 | Databricks SQL dashboard and demo notes | Not started |
@@ -121,4 +121,4 @@ Tests are listed as Stage 5 so the harness has a dedicated checkpoint. When Stag
 
 ## Next requested increment
 
-Stage 4 (Silver + quality), when the user asks for it. Do not start Silver, Gold, tests, or the dashboard in the same change as Stage 3.
+Stage 6 (Gold SQL), when the user asks for it. Do not start Gold, dashboard, or pytest in the same change as Stage 4.

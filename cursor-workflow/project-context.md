@@ -18,7 +18,7 @@ This is a teaching / assessment POC, not a production platform. Prefer a complet
 
 ## Current status
 
-**Stage 3 — Bronze ingest done.** Raw CSVs are on `/Volumes/workspace/ai-poc/ai-data/`. `src/pipeline/bronze/ingest.py` plus `notebooks/01_bronze_ingest.py` land string columns + `_ingest_file`, `_ingest_ts`, `_run_id` into `workspace.bronze.customers|products|orders`. Silver, Gold, tests, and the dashboard are not started.
+**Stage 4 — Silver done.** `src/pipeline/silver/` plus `notebooks/02_silver_transform.py` read `workspace.bronze` only, write typed `workspace.silver.*`, `workspace.ops.quarantine_*`, and `workspace.ops.dq_results`. Gold, dashboard, and pytest are not started.
 
 We will implement and validate one stage at a time in this chat.
 
