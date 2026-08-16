@@ -1,44 +1,44 @@
 # AI Prompts — Debugging
 
-Cursor was used to explain likely causes. I still ran the failing notebook and accepted or rejected the fix. No invented stack traces.
+No separate “debug this stack trace” prompt. Issues were caught in design reviews and when a job refused the expected counts. Cursor explained likely causes; I ran the notebook and kept or rejected the fix.
 
-## Prompt 1: Empty PK vs duplicate window
+## Issue 1: Empty PK vs uniqueness
 
-**PROMPT SENT (summary):**
-Generator writes an empty `customer_id`. After Spark CSV ingest that may be null. How should uniqueness treat it so we do not also fire `CUST_PK_DUP`?
+Came up in Silver design/implement (duplicate PK rules).
 
-**AI RESPONSE SUMMARY:**
-Treat null and blank as completeness failures. Duplicate window should ignore blank PKs (`when(is_blank(pk), false)`).
+**Problem:** Generator writes an empty `customer_id`. Spark CSV often stores that as null. A window on PK would treat all nulls as one duplicate group.
 
-**YOUR EVALUATION:**
-
-- **Accepted:** Matches the seeded single null-PK row (one `CUST_PK_NULL`, not a fake dup group).
-- **Rejected:** Coalescing empty PK to a placeholder ID (would hide the completeness demo).
-
-## Prompt 2: FK parent
-
-**PROMPT SENT (summary):**
-Should order FK checks join Bronze customers/products or Silver?
-
-**AI RESPONSE SUMMARY:**
-Join clean Silver after those tables are written, otherwise a dirty parent could still “validate” an order.
+**AI RESPONSE SUMMARY:** Completeness = null or blank. Uniqueness ignores blank PKs so one missing key is `CUST_PK_NULL` only.
 
 **YOUR EVALUATION:**
 
-- **Accepted:** `ORD_FK_*` vs Silver only.
-- **Rejected:** Checking FKs against Bronze or against `defect_log.csv`.
+✓ **ACCEPTED** — matches the single seeded null-PK row  
+✗ **Rejected** — filling empty PK with a placeholder ID
 
-## Prompt 3: Path not found
+---
 
-**PROMPT SENT (summary):**
-Bronze cannot see the CSVs. Early notes said FileStore.
+## Issue 2: FK parent table
 
-**AI RESPONSE SUMMARY:**
-Point `RAW_DATA_PREFIX` at the Volume that actually holds the files.
+Came up in the Silver design prompt (FK must be against clean Silver).
+
+**AI RESPONSE SUMMARY:** Write Silver customers/products first; join orders to those tables.
 
 **YOUR EVALUATION:**
 
-- **Accepted:** `/Volumes/workspace/ai-poc/ai-data/`.
-- **Rejected:** Leaving FileStore as the documented raw path.
+✓ **ACCEPTED**  
+✗ **Rejected** — joining Bronze or `defect_log.csv`
 
-Write-up: `debugging-notes.md`.
+---
+
+## Issue 3: Raw path
+
+Came up after local CSVs were uploaded.
+
+**PROMPT SENT (from Bronze implement):** files are at `/Volumes/workspace/ai-poc/ai-data/`
+
+**AI RESPONSE SUMMARY:** Set `RAW_DATA_PREFIX` to that Volume.
+
+**YOUR EVALUATION:**
+
+✓ **ACCEPTED**  
+✗ **Rejected** — leaving FileStore as the live raw path
