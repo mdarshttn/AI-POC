@@ -1,0 +1,35 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+*.egg-info/
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+
+# Databricks / Spark local artifacts
+.databricks/
+metastore_db/
+spark-warehouse/
+derby.log
+
+# Generated bulk data (fixtures may be added later under data/sample and tests/fixtures)
+data/generated/
+data/sample/generated/*.csv
+
+# IDE / OS
+.idea/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db
