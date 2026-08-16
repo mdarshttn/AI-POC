@@ -1,16 +1,16 @@
 # Databricks medallion pipeline (e-commerce POC)
 
-Batch data-engineering POC for a small e-commerce dataset. Raw files are CSVs in DBFS. The pipeline follows Bronze, Silver, and Gold. A Databricks SQL dashboard presents business results and data-quality outcomes.
+Batch e-commerce pipeline on Databricks: Python generator → Unity Catalog Volume CSVs → Bronze → Silver (with quarantine) → Gold → dashboard.
 
-This repository is in the **foundation** stage. There is no generator, pipeline, SQL, notebook, or test code yet.
+Generator, Bronze, Silver, and Gold are implemented and validated. This repo now includes dashboard SQL and docs. There is no pytest suite yet.
 
 ## Stack
 
-- Python — synthetic CSV generation (not started)
-- PySpark on Databricks — Bronze and Silver (not started)
-- SQL — Gold business layer (not started)
-- Databricks SQL — dashboard (not started)
-- CSV files in DBFS — raw landing zone
+- Python — synthetic CSVs with seeded defects (`src/generator/`)
+- PySpark on Databricks — Bronze, Silver, Gold (`src/pipeline/`)
+- SQL — dashboard tiles (`sql/dashboard/`)
+- Databricks SQL / notebook — dashboard
+- Raw CSVs — `/Volumes/workspace/ai-poc/ai-data/`
 
 Do not add extra frameworks (Great Expectations, Databricks Asset Bundles, dbt, Airflow, and similar).
 
@@ -18,34 +18,54 @@ Do not add extra frameworks (Great Expectations, Databricks Asset Bundles, dbt, 
 
 - `customers`
 - `products`
-- `orders` (each order references one customer and one product)
+- `orders` (one customer and one product per order)
 
-## Source of truth for this chat
+## Pipeline
 
-Work from the files in `cursor-workflow/`:
+```text
+python src/generator/generate.py
+        → Volume CSVs (unchanged)
+            → notebooks/01_bronze_ingest.py    workspace.bronze.*
+            → notebooks/02_silver_transform.py workspace.silver.* + ops.*
+            → notebooks/03_gold_build.py       workspace.gold.*
+            → notebooks/04_dashboard.py
+              or sql/dashboard/                sales + quality tiles
+```
+
+| Layer | Tables |
+|-------|--------|
+| Bronze | `workspace.bronze.customers`, `products`, `orders` |
+| Silver | `workspace.silver.customers`, `products`, `orders` |
+| Ops | `quarantine_customers\|products\|orders`, `dq_results` |
+| Gold | `dim_customer`, `dim_product`, `fact_orders`, `sales_performance`, `customer_performance`, `product_performance`, `kpi_daily` |
+
+Expected counts (seeded generator): Bronze 10000 / 500 / 100000; Silver 9996 / 495 / 99991; quarantine 4 / 5 / 9; `dq_results` 18.
+
+## How to run
+
+See [docs/runbook.md](docs/runbook.md). Dashboard setup: [docs/dashboard.md](docs/dashboard.md).
+
+## Source of truth
 
 | File | Purpose |
 |------|---------|
-| `cursor-workflow/project-context.md` | What we know, decisions, and constraints |
-| `cursor-workflow/spec.md` | Entities, layers, DBFS, quality, dashboard, tests |
-| `cursor-workflow/cursor-rules-or-instructions.md` | How to implement the next increment |
-| `cursor-workflow/task-breakdown.md` | Ordered stages and current status |
+| `cursor-workflow/project-context.md` | Decisions and constraints |
+| `cursor-workflow/spec.md` | Entities, layers, quality rules, dashboard |
+| `cursor-workflow/cursor-rules-or-instructions.md` | How to change the repo |
+| `cursor-workflow/task-breakdown.md` | Stages and status |
 
-## Intended layout (empty until a later stage)
+## Layout
 
 ```text
 src/generator/           Python CSV generator
-src/pipeline/common/     Shared PySpark helpers
+src/pipeline/common/     Shared paths and Delta writes
 src/pipeline/bronze/     Bronze ingest
 src/pipeline/silver/     Silver cleanse and quality checks
-sql/gold/                Gold mart SQL
+src/pipeline/gold/       Gold business marts
 sql/dashboard/           Databricks SQL tile queries
 notebooks/               Thin Databricks entrypoints
-tests/                   pytest (unit, integration, fixtures)
-docs/                    Human-readable notes beyond cursor-workflow
-data/sample/             Tiny example CSVs (later)
+docs/                    Runbook and dashboard notes
+cursor-workflow/         Spec and working agreement
+data/sample/generated/   Local CSVs (gitignored)
+tests/                   Reserved (not implemented)
 ```
-
-## How we will build this
-
-Incrementally. Finish and validate one stage before starting the next. See `cursor-workflow/task-breakdown.md`.

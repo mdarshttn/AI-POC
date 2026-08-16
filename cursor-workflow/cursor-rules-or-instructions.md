@@ -46,7 +46,7 @@ Keep notebooks thin. Business and quality logic belongs in `src` or `sql` so it 
 
 - Bronze reads entity CSVs from `RAW_DATA_PREFIX` only. Do not ingest `defect_log.csv`.
 - Silver reads Bronze only.
-- Gold SQL reads Silver only.
+- Gold reads Silver only.
 - Quality tiles may read `ops` quarantine / `dq_results`.
 - Do not compute dashboard KPIs from raw CSVs or Bronze.
 

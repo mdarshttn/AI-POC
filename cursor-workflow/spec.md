@@ -160,21 +160,22 @@ Generator (later) should emit a defect log listing injected `rule_id`s so tests 
 
 ## Dashboard
 
-Databricks SQL, one dashboard.
+Databricks SQL or `notebooks/04_dashboard.py`. Queries live in `sql/dashboard/`. Read-only.
 
-**Business tiles (from Gold):**
+**Business tiles (from `workspace.gold`):**
 
-- Order count
-- Revenue (excluding `cancelled`)
-- Average order value
-- Top products by revenue
-- Orders by status or by day
+- Total sales, total orders, average order value, total quantity (`sales_performance`)
+- Sales trend (`kpi_daily`)
+- Top customers (`customer_performance`)
+- Top products (`product_performance`)
+- Category performance (rollup of `product_performance`)
 
-**Quality tiles (from `ops`):**
+**Quality tiles (from `workspace.ops`):**
 
-- Bronze row count vs Silver row count per entity
-- Quarantine count and rate
-- Failures grouped by `rule_id`
+- Failures grouped by `rule_id` (`dq_results`)
+- Quarantine counts and a sample of quarantined records
+
+See `docs/dashboard.md`.
 
 ## Tests (when that stage starts)
 
@@ -190,8 +191,8 @@ No Great Expectations (or similar) suites.
 
 ## Success criteria for the POC
 
-1. Raw CSVs are visible in DBFS.
+1. Raw CSVs are on the UC Volume.
 2. Bronze, Silver, and Gold tables exist and follow the read/write rules above.
 3. Intentional bad rows are quarantined with named rules.
-4. Tests fail if those rules or grains break.
+4. Tests fail if those rules or grains break (when a test suite is added).
 5. The dashboard shows both sales KPIs and quality results.

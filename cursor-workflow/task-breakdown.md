@@ -11,8 +11,8 @@ Ordered stages for this POC. Do not start a later stage until the current one me
 | 3 | Bronze ingest (PySpark) | **Done** |
 | 4 | Silver + quality (PySpark) | **Done** |
 | 5 | Tests and validation | Not started |
-| 6 | Gold business layer | **Done** (this increment) |
-| 7 | Databricks SQL dashboard and demo notes | Not started |
+| 6 | Gold business layer | **Done** |
+| 7 | Databricks SQL dashboard and demo notes | **Done** (this increment) |
 
 Tests are listed as Stage 5 so the harness has a dedicated checkpoint. When Stages 2–4 are built, add tests for that module in the same increment if the user agrees; Stage 5 then tightens the suite and makes it the gate.
 
@@ -100,7 +100,7 @@ Tests are listed as Stage 5 so the harness has a dedicated checkpoint. When Stag
 
 **Input:** Gold marts and `ops.dq_results` / quarantine counts.
 
-**Output:** Databricks SQL queries in `sql/dashboard/`, notes in `docs/` for how to generate data, land CSVs, run Bronze/Silver/Gold, and open the dashboard.
+**Output:** SQL tiles in `sql/dashboard/`, thin notebook `notebooks/04_dashboard.py`, `docs/dashboard.md`, and `docs/runbook.md`.
 
 **Exit check:** A reviewer can follow the notes and see both sales KPIs and quarantine-by-rule without reading PySpark.
 
@@ -121,4 +121,4 @@ Tests are listed as Stage 5 so the harness has a dedicated checkpoint. When Stag
 
 ## Next requested increment
 
-Stage 7 (Databricks SQL dashboard), when the user asks for it. Do not start the dashboard or pytest in the same change as Stage 6.
+POC pipeline and dashboard are complete. Do not start a new pipeline layer. Pytest remains optional if requested later.

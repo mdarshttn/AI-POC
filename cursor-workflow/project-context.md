@@ -18,7 +18,7 @@ This is a teaching / assessment POC, not a production platform. Prefer a complet
 
 ## Current status
 
-**Stage 6 — Gold done.** `src/pipeline/gold/build.py` plus `notebooks/03_gold_build.py` read clean Silver only and write `workspace.gold` dims, `fact_orders`, and sales/customer/product/daily performance tables. Dashboard and pytest are not started.
+**Stage 7 — Dashboard done.** `sql/dashboard/` and `notebooks/04_dashboard.py` read `workspace.gold` for sales tiles and `workspace.ops` for quality tiles. Generator, Bronze, Silver, and Gold were not changed. Pytest was not started.
 
 We will implement and validate one stage at a time in this chat.
 
@@ -29,8 +29,8 @@ We will implement and validate one stage at a time in this chat.
 | Data generation | Python | Create reproducible CSVs, including seeded defects |
 | Raw storage | CSV files on UC Volume `/Volumes/workspace/ai-poc/ai-data/` | Source of truth for ingest |
 | Bronze and Silver | PySpark on Databricks | Land, type, clean, quarantine |
-| Gold | SQL | Business marts and KPI grains |
-| Serving | Databricks SQL | Dashboard |
+| Gold | PySpark | Business marts from Silver |
+| Serving | Databricks SQL / notebook | Dashboard |
 
 Delta tables are the expected table format on Databricks. That is native storage, not an extra product.
 
