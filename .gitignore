@@ -23,7 +23,7 @@ metastore_db/
 spark-warehouse/
 derby.log
 
-# Generated bulk data (fixtures may be added later under data/sample and tests/fixtures)
+# Generated bulk data (local copies of the generator live under data/)
 data/generated/
 data/sample/generated/*.csv
 

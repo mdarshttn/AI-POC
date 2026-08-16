@@ -30,19 +30,19 @@ candidates.extend([Path.cwd(), Path.cwd().parent, Path.cwd().parent.parent])
 
 repo_root = None
 for candidate in candidates:
-    if (candidate / "src" / "pipeline" / "gold" / "build.py").exists():
+    if (candidate / "src" / "gold" / "create_gold_tables.py").exists():
         repo_root = candidate
         break
 
 if repo_root is None:
     raise FileNotFoundError(
-        "Could not find src/pipeline/gold/build.py. "
+        "Could not find src/gold/create_gold_tables.py. "
         "Set the repo_root widget to the cloned repo path."
     )
 
 sys.path.insert(0, str(repo_root / "src"))
 
-from pipeline.gold.build import run_gold_build
+from gold.create_gold_tables import run_gold_build
 
 # COMMAND ----------
 

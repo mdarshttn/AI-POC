@@ -27,19 +27,19 @@ candidates.extend([Path.cwd(), Path.cwd().parent, Path.cwd().parent.parent])
 
 repo_root = None
 for candidate in candidates:
-    if (candidate / "src" / "pipeline" / "silver" / "transform.py").exists():
+    if (candidate / "src" / "silver" / "create_silver_tables.py").exists():
         repo_root = candidate
         break
 
 if repo_root is None:
     raise FileNotFoundError(
-        "Could not find src/pipeline/silver/transform.py. "
+        "Could not find src/silver/create_silver_tables.py. "
         "Set the repo_root widget to the cloned repo path."
     )
 
 sys.path.insert(0, str(repo_root / "src"))
 
-from pipeline.silver.transform import run_silver_transform
+from silver.create_silver_tables import run_silver_transform
 
 # COMMAND ----------
 

@@ -30,19 +30,19 @@ candidates.extend([Path.cwd(), Path.cwd().parent, Path.cwd().parent.parent])
 
 repo_root = None
 for candidate in candidates:
-    if (candidate / "src" / "pipeline" / "bronze" / "ingest.py").exists():
+    if (candidate / "src" / "bronze" / "ingest_all.py").exists():
         repo_root = candidate
         break
 
 if repo_root is None:
     raise FileNotFoundError(
-        "Could not find src/pipeline/bronze/ingest.py. "
+        "Could not find src/bronze/ingest_all.py. "
         "Set the repo_root widget to the cloned repo path."
     )
 
 sys.path.insert(0, str(repo_root / "src"))
 
-from pipeline.bronze.ingest import run_bronze_ingest
+from bronze.ingest_all import run_bronze_ingest
 
 # COMMAND ----------
 

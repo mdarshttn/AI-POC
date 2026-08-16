@@ -18,7 +18,7 @@ This is a teaching / assessment POC, not a production platform. Prefer a complet
 
 ## Current status
 
-**Stage 7 — Dashboard done.** `sql/dashboard/` and `notebooks/04_dashboard.py` read `workspace.gold` for sales tiles and `workspace.ops` for quality tiles. Generator, Bronze, Silver, and Gold were not changed. Pytest was not started.
+**Stage 7 — Dashboard SQL done; warehouse UI still to assemble.** Local `unittest` contract tests are in `tests/`. Repo layout matches the submission tree.
 
 We will implement and validate one stage at a time in this chat.
 
@@ -58,7 +58,7 @@ There is no `order_items` table. Each order row references **one** `customer_id`
 
 ## Architecture in one paragraph
 
-Python writes CSV files. Those files are uploaded unchanged to `/Volumes/workspace/ai-poc/ai-data/`. A PySpark Bronze step reads the entity CSVs as-is (plus ingest metadata) into Delta. A PySpark Silver step types columns, enforces quality rules, writes clean rows to Silver, and writes failing rows to quarantine with a rule id. SQL builds Gold marts from Silver only. Databricks SQL charts Gold KPIs and Silver/ops quality counts. Tests assert contracts and seeded defects using small fixtures; they are not the first place business logic should live.
+Python writes CSV files. Those files are uploaded unchanged to `/Volumes/workspace/ai-poc/ai-data/`. A PySpark Bronze step reads the entity CSVs as-is (plus ingest metadata) into Delta. A PySpark Silver step types columns, enforces quality rules, writes clean rows to Silver, and writes failing rows to quarantine with a rule id. PySpark builds Gold marts from Silver only. Databricks SQL charts Gold KPIs and ops quality counts. Local unittests assert generator contracts and file-level Gold SQL; Spark jobs assert live counts.
 
 ## Data flow
 
@@ -84,20 +84,18 @@ Rules:
 
 The Unity Catalog Volume is the **raw landing zone**, not a substitute for tables.
 
-- Raw CSVs live at `/Volumes/workspace/ai-poc/ai-data/` (`RAW_DATA_PREFIX` in `src/pipeline/common/settings.py`).
+- Raw CSVs live at `/Volumes/workspace/ai-poc/ai-data/` (`RAW_DATA_PREFIX` in `src/common/settings.py`).
 - `defect_log.csv` is stored there for later tests and is **not** a Bronze business table.
 - Pipeline tables live as Delta in `workspace.bronze` (later `silver`, `gold`, `ops`).
 - Generated files may be created locally first, then uploaded unchanged. Local generated dumps are not committed to git.
 
-## Testing approach (planned, not implemented)
+## Testing approach
 
-- **Unit tests** with pytest: generator output shape, defect seeding, and PySpark transform functions on tiny DataFrames.
-- **Contract checks**: expected columns, keys, and types from `spec.md`.
-- **Quality tests**: seeded bad rows must fail named rules and land in quarantine.
-- **Gold checks**: grain and simple KPI formulas on fixture-sized clean data.
-- **Integration** later: run the same logic against a Databricks workspace or a local Spark session using `tests/fixtures`.
+- **Unit tests** (`python -m unittest discover -s tests`): generator defect blocks, conservation math, quality module files, Gold SQL aggregations.
+- **In-job asserts** on Databricks: Silver conservation and Gold `fact_orders` count.
+- **SQL notebook:** `notebooks/Validation.ipynb` after Gold.
 
-Databricks is the runtime for the pipeline demo. Tests should be writable and mostly runnable without opening the dashboard.
+Databricks is the runtime for the pipeline demo. Laptop tests do not start Spark.
 
 ## Dashboard goal
 

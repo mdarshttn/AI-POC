@@ -29,12 +29,12 @@ Do **not** add a fourth entity (`order_items` or similar). Orders already carry 
 
 | Path | What belongs there |
 |------|--------------------|
-| `src/generator/` | Plain Python. No Spark imports. |
-| `src/pipeline/bronze/` | PySpark ingest from DBFS CSVs |
-| `src/pipeline/silver/` | PySpark typing, rules, quarantine |
-| `src/pipeline/gold/` | PySpark business marts from Silver |
-| `src/pipeline/common/` | Shared path helpers, logging, Delta writes |
-| `sql/dashboard/` | Databricks SQL queries for tiles |
+| `src/data_generation/` | Plain Python. No Spark imports. |
+| `src/bronze/` | PySpark ingest from Volume CSVs |
+| `src/silver/` | PySpark typing, rules, quarantine |
+| `src/gold/` | PySpark business marts from Silver |
+| `src/common/` | Shared path helpers, Delta writes |
+| `src/dashboard/` | Databricks SQL queries for tiles |
 | `notebooks/` | Thin wrappers that call `src` / run SQL files |
 | `tests/` | pytest only; fixtures stay small |
 | `docs/` | Extra human docs; do not fork a second spec |
@@ -50,14 +50,14 @@ Keep notebooks thin. Business and quality logic belongs in `src` or `sql` so it 
 - Quality tiles may read `ops` quarantine / `dq_results`.
 - Do not compute dashboard KPIs from raw CSVs or Bronze.
 
-Raw volume prefix: `/Volumes/workspace/ai-poc/ai-data/` (override only via `src/pipeline/common/settings.py` or notebook widgets).
+Raw volume prefix: `/Volumes/workspace/ai-poc/ai-data/` (override only via `src/common/settings.py` or notebook widgets).
 
 ## Quality and tests
 
 - Quality rules are PySpark/SQL with a `rule_id` from `spec.md`.
 - Write failures to quarantine and summary rows to `ops.dq_results`.
-- Tests must use named rules and small fixtures. Do not require a live dashboard to prove a transform.
-- Never commit secrets, workspace tokens, or large generated CSVs.
+- Local tests: `python -m unittest discover -s tests -v`. Do not require a live dashboard to prove generator contracts.
+- Never commit secrets, workspace tokens, or extra generated dumps under `data/sample/generated/`.
 
 ## Code style
 

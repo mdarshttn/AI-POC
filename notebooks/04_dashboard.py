@@ -4,7 +4,7 @@
 # MAGIC
 # MAGIC Read-only views over `workspace.gold` and `workspace.ops`.
 # MAGIC No pipeline writes. Visualise cells as counters, line, or bar in the notebook UI,
-# MAGIC or paste the matching files from `sql/dashboard/` into a Databricks SQL dashboard.
+# MAGIC or paste the matching SELECTs from `src/dashboard/dashboard_queries.sql` into a Databricks SQL dashboard.
 
 # COMMAND ----------
 

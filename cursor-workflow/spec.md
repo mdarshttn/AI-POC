@@ -70,7 +70,7 @@ Allowed `payment_method` values: `card`, `upi`, `netbanking`, `cod`.
 ## Files in the raw volume
 
 Prefix: `/Volumes/workspace/ai-poc/ai-data/`  
-Configured in `src/pipeline/common/settings.py` (`RAW_DATA_PREFIX`). Do not hardcode this path in notebooks.
+Configured in `src/common/settings.py` (`RAW_DATA_PREFIX`). Do not hardcode this path in notebooks.
 
 | Entity | Path | Bronze? |
 |--------|------|---------|
@@ -160,7 +160,7 @@ Generator (later) should emit a defect log listing injected `rule_id`s so tests 
 
 ## Dashboard
 
-Databricks SQL or `notebooks/04_dashboard.py`. Queries live in `sql/dashboard/`. Read-only.
+Databricks SQL or `notebooks/04_dashboard.py`. Queries live in `src/dashboard/dashboard_queries.sql`. Read-only.
 
 **Business tiles (from `workspace.gold`):**
 
@@ -175,24 +175,23 @@ Databricks SQL or `notebooks/04_dashboard.py`. Queries live in `sql/dashboard/`.
 - Failures grouped by `rule_id` (`dq_results`)
 - Quarantine counts and a sample of quarantined records
 
-See `docs/dashboard.md`.
+See `src/dashboard/DASHBOARD_GUIDE.md`.
 
-## Tests (when that stage starts)
+## Tests
+
+Local: `python -m unittest discover -s tests -v` (generator defects, conservation math, Gold SQL files). Spark jobs still raise on Databricks if Silver/Gold counts drift. No Great Expectations. Tiny Spark DataFrame tests are not in this slice.
 
 | Kind | What it proves |
 |------|----------------|
-| Generator unit | Seed is reproducible; defect log matches injected rows |
-| Transform unit | Given a tiny DataFrame, Bronze/Silver functions emit expected columns |
-| Quality | Each seeded defect class fails its `rule_id` and does not enter Silver |
-| Gold SQL | `fact_orders` grain is `order_id`; revenue formula matches spec |
-| Fixtures | Tiny CSVs committed under `tests/fixtures/`; no large dumps in git |
-
-No Great Expectations (or similar) suites.
+| Generator unit | Defect blocks, `rule_id`s, good-order FKs, CSV counts |
+| Quality contracts | 18 issues, Bronze = Silver + quarantine |
+| Gold SQL files | Sales by product, revenue by customer, daily/weekly trend |
+| In-job | Silver conservation; `fact_orders` = Silver orders |
 
 ## Success criteria for the POC
 
 1. Raw CSVs are on the UC Volume.
 2. Bronze, Silver, and Gold tables exist and follow the read/write rules above.
 3. Intentional bad rows are quarantined with named rules.
-4. Tests fail if those rules or grains break (when a test suite is added).
-5. The dashboard shows both sales KPIs and quality results.
+4. Local unittests fail if seeded defect contracts or Gold SQL files break; Databricks jobs fail if live counts drift.
+5. Dashboard SQL exists for sales KPIs and quality results (warehouse UI assembly is a follow-up).

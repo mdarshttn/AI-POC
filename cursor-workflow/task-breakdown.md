@@ -38,7 +38,7 @@ Tests are listed as Stage 5 so the harness has a dedicated checkpoint. When Stag
 
 **Input:** Entity columns, allowed values, and `rule_id`s from `spec.md`.
 
-**Output:** Python under `src/generator/` that writes local CSVs (and can be copied to DBFS). A defect log of injected bad rows. No Spark.
+**Output:** Python under `src/data_generation/` that writes local CSVs (and can be copied to the Volume). A defect log of injected bad rows. No Spark.
 
 **Exit check:** Same seed → same files. Good rows plus at least one example of each planned defect class. Defect log lists `rule_id`s.
 
@@ -52,7 +52,7 @@ Tests are listed as Stage 5 so the harness has a dedicated checkpoint. When Stag
 
 **Input:** CSVs at `/Volumes/workspace/ai-poc/ai-data/`.
 
-**Output:** `workspace.bronze.customers`, `workspace.bronze.products`, `workspace.bronze.orders` with ingest metadata. Code under `src/pipeline/bronze/`; thin notebook `notebooks/01_bronze_ingest.py`.
+**Output:** `workspace.bronze.customers`, `workspace.bronze.products`, `workspace.bronze.orders` with ingest metadata. Code under `src/bronze/`; thin notebook `notebooks/01_bronze_ingest.py`.
 
 **Exit check:** Row counts match CSVs. Payload stays raw (string-friendly). Re-run for the same `_run_id` does not duplicate that run. No business cleansing.
 
@@ -64,7 +64,7 @@ Tests are listed as Stage 5 so the harness has a dedicated checkpoint. When Stag
 
 **Input:** Bronze tables + quality rules in `spec.md`.
 
-**Output:** Silver clean tables, `ops` quarantine tables, `ops.dq_results`. Code under `src/pipeline/silver/`.
+**Output:** Silver clean tables, `ops` quarantine tables, `ops.dq_results`. Code under `src/silver/`.
 
 **Exit check:** Seeded defects land in quarantine with the correct `rule_id`. Clean orders have valid FKs to clean customers and products.
 
@@ -76,9 +76,9 @@ Tests are listed as Stage 5 so the harness has a dedicated checkpoint. When Stag
 
 **Input:** Generator, Bronze/Silver functions, spec contracts, tiny fixtures.
 
-**Output:** pytest under `tests/` (unit, a small integration path, fixtures). No new DQ product.
+**Output:** `unittest` modules under `tests/` (generator, quality contracts, pipeline/Gold file contracts). No new DQ product.
 
-**Exit check:** A local pytest run fails if columns, seeded defects, or Gold grain/KPI formulas break (Gold tests may wait until Stage 6 if SQL does not exist yet).
+**Exit check:** `python -m unittest discover -s tests -v` fails if seeded defects, conservation math, or Gold SQL files break.
 
 **Connects to:** Gates Stages 2–6.
 
@@ -88,7 +88,7 @@ Tests are listed as Stage 5 so the harness has a dedicated checkpoint. When Stag
 
 **Input:** Clean Silver tables + KPI definitions in `spec.md`.
 
-**Output:** PySpark under `src/pipeline/gold/` and thin notebook `notebooks/03_gold_build.py`. Tables: `gold.dim_customer`, `gold.dim_product`, `gold.fact_orders`, `gold.sales_performance`, `gold.customer_performance`, `gold.product_performance`, `gold.kpi_daily`.
+**Output:** PySpark under `src/gold/` and thin notebook `notebooks/03_gold_build.py`. Tables: `gold.dim_customer`, `gold.dim_product`, `gold.fact_orders`, `gold.sales_performance`, `gold.customer_performance`, `gold.product_performance`, `gold.kpi_daily`.
 
 **Exit check:** Grain of `fact_orders` is `order_id` and matches Silver order count. Revenue KPIs use `quantity * unit_price` and exclude `cancelled`.
 
@@ -100,7 +100,7 @@ Tests are listed as Stage 5 so the harness has a dedicated checkpoint. When Stag
 
 **Input:** Gold marts and `ops.dq_results` / quarantine counts.
 
-**Output:** SQL tiles in `sql/dashboard/`, thin notebook `notebooks/04_dashboard.py`, `docs/dashboard.md`, and `docs/runbook.md`.
+**Output:** SQL tiles in `src/dashboard/`, thin notebook `notebooks/04_dashboard.py`, `src/dashboard/DASHBOARD_GUIDE.md`, and `docs/runbook.md`.
 
 **Exit check:** A reviewer can follow the notes and see both sales KPIs and quarantine-by-rule without reading PySpark.
 

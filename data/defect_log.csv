@@ -1,0 +1,19 @@
+table,rule_id,record_id,source_row,column,bad_value
+customers,CUST_PK_NULL,,9997,customer_id,
+customers,CUST_PK_DUP,CUST-DUP-01,9998,customer_id,CUST-DUP-01
+customers,CUST_PK_DUP,CUST-DUP-01,9999,customer_id,CUST-DUP-01
+customers,CUST_EMAIL_INVALID,CUST-BAD-EML,10000,email,not-an-email
+products,PROD_PK_NULL,,496,product_id,
+products,PROD_PK_DUP,PROD-DUP-01,497,product_id,PROD-DUP-01
+products,PROD_PK_DUP,PROD-DUP-01,498,product_id,PROD-DUP-01
+products,PROD_CATEGORY_INVALID,PROD-BAD-CAT,499,category,Food
+products,PROD_PRICE_NEGATIVE,PROD-NEG-PRC,500,unit_price,-10.00
+orders,ORD_PK_NULL,,99992,order_id,
+orders,ORD_PK_DUP,ORD-DUP-01,99993,order_id,ORD-DUP-01
+orders,ORD_PK_DUP,ORD-DUP-01,99994,order_id,ORD-DUP-01
+orders,ORD_QTY_INVALID,ORD-BAD-QTY,99995,quantity,0
+orders,ORD_PRICE_NEGATIVE,ORD-BAD-PRC,99996,unit_price,-5.00
+orders,ORD_STATUS_INVALID,ORD-BAD-STS,99997,order_status,SHIPPPED
+orders,ORD_FK_CUSTOMER,ORD-BAD-FCU,99998,customer_id,CUST-MISSING
+orders,ORD_FK_PRODUCT,ORD-BAD-FPR,99999,product_id,PROD-MISSING
+orders,ORD_DATE_INVALID,ORD-BAD-DAT,100000,order_date,2099-12-31 23:59:59
