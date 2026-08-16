@@ -1,4 +1,8 @@
 # Databricks notebook source
+# /// script
+# [tool.databricks.environment]
+# environment_version = "5"
+# ///
 # MAGIC %md
 # MAGIC # Gold build
 # MAGIC
@@ -64,3 +68,17 @@ display(spark.table("gold.sales_performance"))
 
 display(spark.sql("SELECT * FROM gold.product_performance ORDER BY total_sales DESC LIMIT 10"))
 display(spark.sql("SELECT * FROM gold.customer_performance ORDER BY total_sales DESC LIMIT 10"))
+
+# COMMAND ----------
+
+# MAGIC %sql
+# MAGIC SELECT
+# MAGIC     order_status,
+# MAGIC     COUNT(*) AS orders,
+# MAGIC     SUM(quantity * unit_price) AS sales
+# MAGIC FROM workspace.gold.fact_orders
+# MAGIC GROUP BY order_status
+# MAGIC ORDER BY order_status;
+
+# COMMAND ----------
+

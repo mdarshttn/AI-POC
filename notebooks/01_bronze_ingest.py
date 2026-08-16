@@ -1,4 +1,8 @@
 # Databricks notebook source
+# /// script
+# [tool.databricks.environment]
+# environment_version = "5"
+# ///
 # MAGIC %md
 # MAGIC # Bronze ingest
 # MAGIC
@@ -63,3 +67,6 @@ spark.sql(f"USE SCHEMA `{schema}`")
 print("customers", spark.table("customers").count())
 print("products", spark.table("products").count())
 print("orders", spark.table("orders").count())
+
+# COMMAND ----------
+
