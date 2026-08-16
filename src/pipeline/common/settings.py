@@ -7,6 +7,7 @@ CATALOG_NAME = "workspace"
 BRONZE_SCHEMA = "bronze"
 SILVER_SCHEMA = "silver"
 OPS_SCHEMA = "ops"
+GOLD_SCHEMA = "gold"
 AS_OF_DATE = date(2026, 8, 16)
 
 BRONZE_ENTITIES = ("customers", "products", "orders")

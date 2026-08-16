@@ -9,9 +9,9 @@ Ordered stages for this POC. Do not start a later stage until the current one me
 | 1 | Foundation and context | **Done** |
 | 2 | Python CSV generator | **Done** |
 | 3 | Bronze ingest (PySpark) | **Done** |
-| 4 | Silver + quality (PySpark) | **Done** (this increment) |
+| 4 | Silver + quality (PySpark) | **Done** |
 | 5 | Tests and validation | Not started |
-| 6 | Gold SQL | Not started |
+| 6 | Gold business layer | **Done** (this increment) |
 | 7 | Databricks SQL dashboard and demo notes | Not started |
 
 Tests are listed as Stage 5 so the harness has a dedicated checkpoint. When Stages 2–4 are built, add tests for that module in the same increment if the user agrees; Stage 5 then tightens the suite and makes it the gate.
@@ -84,13 +84,13 @@ Tests are listed as Stage 5 so the harness has a dedicated checkpoint. When Stag
 
 ---
 
-## Stage 6 — Gold business layer (SQL)
+## Stage 6 — Gold business layer
 
-**Input:** Silver tables + KPI definitions in `spec.md`.
+**Input:** Clean Silver tables + KPI definitions in `spec.md`.
 
-**Output:** SQL files in `sql/gold/` creating `dim_customer`, `dim_product`, `fact_orders`, and optionally `kpi_daily`.
+**Output:** PySpark under `src/pipeline/gold/` and thin notebook `notebooks/03_gold_build.py`. Tables: `gold.dim_customer`, `gold.dim_product`, `gold.fact_orders`, `gold.sales_performance`, `gold.customer_performance`, `gold.product_performance`, `gold.kpi_daily`.
 
-**Exit check:** Grain of `fact_orders` is `order_id`. Revenue is `quantity * unit_price` excluding `cancelled`. Dashboard-ready tables exist without Spark in the SQL files.
+**Exit check:** Grain of `fact_orders` is `order_id` and matches Silver order count. Revenue KPIs use `quantity * unit_price` and exclude `cancelled`.
 
 **Connects to:** Stage 7.
 
@@ -121,4 +121,4 @@ Tests are listed as Stage 5 so the harness has a dedicated checkpoint. When Stag
 
 ## Next requested increment
 
-Stage 6 (Gold SQL), when the user asks for it. Do not start Gold, dashboard, or pytest in the same change as Stage 4.
+Stage 7 (Databricks SQL dashboard), when the user asks for it. Do not start the dashboard or pytest in the same change as Stage 6.

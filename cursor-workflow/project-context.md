@@ -18,7 +18,7 @@ This is a teaching / assessment POC, not a production platform. Prefer a complet
 
 ## Current status
 
-**Stage 4 — Silver done.** `src/pipeline/silver/` plus `notebooks/02_silver_transform.py` read `workspace.bronze` only, write typed `workspace.silver.*`, `workspace.ops.quarantine_*`, and `workspace.ops.dq_results`. Gold, dashboard, and pytest are not started.
+**Stage 6 — Gold done.** `src/pipeline/gold/build.py` plus `notebooks/03_gold_build.py` read clean Silver only and write `workspace.gold` dims, `fact_orders`, and sales/customer/product/daily performance tables. Dashboard and pytest are not started.
 
 We will implement and validate one stage at a time in this chat.
 

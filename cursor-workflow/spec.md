@@ -118,16 +118,21 @@ CSV conventions (when generation starts): UTF-8, comma-separated, header row, op
 
 ### Gold
 
-**Reads:** Silver clean tables only (plus `ops.dq_results` / quarantine for quality tiles).
+**Reads:** Clean Silver tables only (`workspace.silver.customers|products|orders`). Does not read Bronze, CSVs, or quarantine.
 
-**Writes (planned):**
+**Writes:** Delta tables under `workspace.gold` (overwrite each run):
 
-- `gold.dim_customer`
-- `gold.dim_product`
-- `gold.fact_orders`
-- `gold.kpi_daily` (optional helper: date, order_count, revenue, aov)
+- `dim_customer`, `dim_product`
+- `fact_orders` — one row per `order_id`; `order_sales = quantity * unit_price`
+- `sales_performance` — overall `total_orders`, `total_quantity`, `total_sales`, `average_order_value`
+- `customer_performance`, `product_performance` — same metrics by customer / product
+- `kpi_daily` — same metrics by `order_date`
 
-Gold is SQL. Grain of `fact_orders` is one row per `order_id`.
+**Behavior:**
+
+- Sales KPIs exclude `order_status = cancelled`.
+- `average_order_value = total_sales / total_orders`.
+- `fact_orders` count must equal `silver.orders` count.
 
 ## Quality rules (intentional defects must hit these)
 

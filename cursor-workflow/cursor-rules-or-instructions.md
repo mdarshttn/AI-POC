@@ -32,8 +32,8 @@ Do **not** add a fourth entity (`order_items` or similar). Orders already carry 
 | `src/generator/` | Plain Python. No Spark imports. |
 | `src/pipeline/bronze/` | PySpark ingest from DBFS CSVs |
 | `src/pipeline/silver/` | PySpark typing, rules, quarantine |
+| `src/pipeline/gold/` | PySpark business marts from Silver |
 | `src/pipeline/common/` | Shared path helpers, logging, Delta writes |
-| `sql/gold/` | One SQL file per Gold object |
 | `sql/dashboard/` | Databricks SQL queries for tiles |
 | `notebooks/` | Thin wrappers that call `src` / run SQL files |
 | `tests/` | pytest only; fixtures stay small |
